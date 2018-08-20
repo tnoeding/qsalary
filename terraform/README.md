@@ -9,6 +9,7 @@ This terraform docker container provides a complete enviroment in order to run t
 ~'~ Warning - This WILL cost money ~'~
 
 ** Be sure to set all custom required configs before running (.env)**
+
 ** This includes creating the required .env file containing AWS Access and Secret key **
 
 ## Usage
