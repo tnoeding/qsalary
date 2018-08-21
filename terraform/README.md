@@ -25,6 +25,6 @@ docker-compose up
 ### Destroying the host
 
 ```bash
-sed 's/apply/destroy/g' docker-compose.yml
+sed -i.bak's/apply/destroy/g' docker-compose.yml
 docker-compose up
 ```
