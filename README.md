@@ -9,7 +9,9 @@ git clone https://github.com/datacharmer/test_db test_db
 
 ### available run options
 `print` - This will create the report and print it to the console
+
 `serve` - This will create the report and serve it as plain text on port 80 for web browser access
+
 `test` - This will create the report then validate the data comparing the data
 
 ## Additional ways to run the application
