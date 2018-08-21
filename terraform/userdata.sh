@@ -6,7 +6,7 @@ yum update -y
 logger -p user.notice "BOOTSTRAP: Updating system - $?"
 
 # Installing Docker
-yum install -y docker git
+yum install -y docker git sharutils
 logger -p user.notice "BOOTSTRAP: Installing Docker - $?"
 
 # Installing Docker Compose
@@ -19,171 +19,109 @@ logger -p user.notice "BOOTSTRAP: Installing Docker Compose - $?"
 logger -p user.notice "BOOTSTRAP: Starting Docker Daemon - $?"
 
 # Making the work directory
-mkdir -p /opt/qsalary
+mkdir -p /tmp/qsalary
+logger -p user.notice "BOOTSTRAP: Wrote work directory - $?"
 
 # Writing qsalary.sh
-cat > /opt/qsalary/qsalary.sh <<EOF
-#!/usr/bin/env bash
-# Department Salary Quarterly Report
-# tsn CoT
-# usage: ./qsalary.sh <year>
-# example: ./qsalary.sh 2000
+cat > /tmp/qsalary/file.tmp <<_EOF
+begin-base64 755 qsalary.sh
+IyEvdXNyL2Jpbi9lbnYgYmFzaAojIERlcGFydG1lbnQgU2FsYXJ5IFF1YXJ0
+ZXJseSBSZXBvcnQKIyB0c24gQ29UCiMgdXNhZ2U6IC4vcXNhbGFyeS5zaCA8
+eWVhcj4KIyBleGFtcGxlOiAuL3FzYWxhcnkuc2ggMjAwMAoKIyBDcmVhdGUg
+VmFyaWFibGVzIGFuZCBUZW1wIExvY2F0aW9uClJFUE9SVF9ZRUFSPSR7MT9Z
+ZWFyIGlzIG1pc3NpbmcsIHBsZWFzZSBwYXNzIGEgeWVhciB0byB0aGUgY29t
+bWFuZC5cIEV4YW1wbGU6IC4vcXNhbGFyeS5zaCAyMDAwfQpUTVBESVI9JCht
+a3RlbXAgLWQgL3RtcC9xc2FsYXJ5LVhYWFgpCkRFUFQ9JChta3RlbXAgLXAg
+JFRNUERJUiAtdCBkZXB0LVhYWFgpCgojIEhlbHAgb3V0cHV0IGlmIHJlcXVl
+c3RlZAppZiBbICIkMSIgPT0gIi1oIiBdIHx8IFsgIiQxIiA9PSAiLS1oZWxw
+IiBdOyB0aGVuCiAgZWNobyAiVXNhZ2U6IGBiYXNlbmFtZSAkMGAgPHllYXI+
+IDxydW4gb3B0aW9uPiIKICBlY2hvICJFeGFtcGxlOiBgYmFzZW5hbWUgJDBg
+IDIwMDAgcHJpbnQiCiAgZWNobyAiIFJ1biBPcHRpb25zOiBwcmludCBzZXJ2
+ZSB0ZXN0IgogIGV4aXQgMApmaQoKIyBDcmVhdGUgYSB0cmFwIGZvciBjbGVh
+bmluZyB1cCBpZiB3ZSBoYXZlIGlzc3VlcwpjbGVhbnVwKCkgewogIHJtICRE
+RVBUCiAgcm0gLXJmICRUTVBESVIKfQp0cmFwIGNsZWFudXAgMAoKCiMgR2V0
+IERlcGFydG1lbnRzCmdldERlcGFydG1lbnQoKSB7CmVjaG8gIkdldHRpbmcg
+RGVwYXJ0bWVudHMiCmdyZXAgLW8gJyguKicgdGVzdF9kYi9sb2FkX2RlcGFy
+dG1lbnRzLmR1bXAgfCBjdXQgLWYxIC1kLCB8IHNlZCAicy9bKCddLy9nIiA+
+PiAkREVQVAp9CgojIExvb3AgdGhyb3VnaCBkZXBhcnRtZW50cywgY3JlYXRl
+IHRlbXAgZmlsZXMgZm9yIGVhY2ggZGVwYXJ0bWVudCwgZ2V0IGVtcGxveWVl
+IElEcyBmb3IgZGVwYXJ0bWVudHMKZW1wbG95ZWVJRCgpIHsKZWNobyAiR2V0
+dGluZyBFbXBsb3llZSBJRHMiCmZvciBpIGluIGBjYXQgJERFUFRgOyBkbyAK
+Z3JlcCAtaCAtbyAnKC4qJyB0ZXN0X2RiL2xvYWRfZGVwdF9lbXAuZHVtcCB0
+ZXN0X2RiL2xvYWRfZGVwdF9tYW5hZ2VyLmR1bXAgfCBncmVwIC13ICRpIHwg
+Y3V0IC1mMSAtZCwgfCBjdXQgLWMyLSB8IHNvcnQgPj4gJFRNUERJUi8kaTsK
+ZG9uZQp9CgojIEdldCBSZXF1ZXN0ZWQgWWVhciBEYXRhCmdldFllYXIoKSB7
+CmVjaG8gIkdldHRpbmcgcmVxdWVzdGVkIHllYXIgZGF0YSIKYXdrIC1GIiwi
+ICckM34vXidcJycnJFJFUE9SVF9ZRUFSJy8nIHRlc3RfZGIvbG9hZF9zYWxh
+cmllcyouZHVtcCB8IHNlZCAicy9bKCddLy9nIiB8IHNvcnQgPj4gJFRNUERJ
+Ui8kUkVQT1JUX1lFQVItZGF0YQp9CgojIEdldCBTYWxhcnkgQnkgWWVhcgpn
+ZXRTYWxhcnkoKSB7CmVjaG8gIkdldHRpbmcgU2FsYXJpZXMiCmZvciBpIGlu
+IGBjYXQgJERFUFRgOyBkbyAKYXdrIC1GIiwiICdGTlIgPT0gTlIge2Fyclsk
+MF0gPSAxOyBuZXh0fSAoJDEgaW4gYXJyKScgJFRNUERJUi8kaSAkVE1QRElS
+LyRSRVBPUlRfWUVBUi1kYXRhIHwgY3V0IC1mMiAtZCwgPj4gJFRNUERJUi8k
+aS10b3RhbApkb25lCn0KCiMgR2VuZXJhdGUgdGhlIFJlcG9ydApjcmVhdGVS
+ZXBvcnQoKSB7CmVjaG8gIkNyZWF0aW5nIFF1YXJ0ZXJseSBTYWxhcnkgUmVw
+b3J0IgplY2hvICIkUkVQT1JUX1lFQVIgUXVhcnRlcmx5IFNhbGFyeSBSZXBv
+cnQiID4+ICRUTVBESVIvcmVwb3J0LnR4dAplY2hvICIiID4+ICRUTVBESVIv
+cmVwb3J0LnR4dApmb3IgaSBpbiBgY2F0ICRERVBUYDsgZG8KZ3JlcCAkaSB0
+ZXN0X2RiL2xvYWRfZGVwYXJ0bWVudHMuZHVtcCB8IGN1dCAtZjIgLWQsIHwg
+c2VkICJzL1soKTsnXS8vZyIgPj4gJFRNUERJUi9yZXBvcnQudHh0Owphd2sg
+J3sgdG90YWwrPSQxIH0gRU5EeyAgcHJpbnQgaW50KHRvdGFsLzQpIH0nICRU
+TVBESVIvJGktdG90YWwgPj4gJFRNUERJUi9yZXBvcnQudHh0OwplY2hvICIi
+ID4+ICRUTVBESVIvcmVwb3J0LnR4dApkb25lCn0KCiMgVmVyaWZ5IHRoZSBu
+dW1iZXJzCnZlcmlmeVJlcG9ydCgpIHsKZWNobyAiVmVyaWZ5aW5nIFRvdGFs
+cyIKYXdrIC1GIiwiICckM34vXidcJycnJFJFUE9SVF9ZRUFSJy8nIHRlc3Rf
+ZGIvbG9hZF9zYWxhcmllczEuZHVtcCB0ZXN0X2RiL2xvYWRfc2FsYXJpZXMy
+LmR1bXAgdGVzdF9kYi9sb2FkX3NhbGFyaWVzMy5kdW1wIHwgY3V0IC1mMiAt
+ZCwgPj4gJFRNUERJUi92ZXJpZnlfcmVwb3J0CmZvciBpIGluIGBjYXQgJERF
+UFRgOyBkbwpwYXN0ZSAtc2QrICRUTVBESVIvJGktdG90YWwgfCBiYyA+PiAk
+VE1QRElSL3JlcG9ydF9udW1iZXJzOwojIENoZWNrIHRvIHNlZSBpZiB0aGUg
+ZGVwYXJ0bWVudCBoYXMgbW9yZSBzYWxhcmllcyB0aGVuIGVtcGxveWVlcwpp
+ZiBbWyAkKGVjaG8gImB3YyAtbCAkVE1QRElSLyRpIHwgY3V0IC1mMSAtZCIg
+ImAgPj0gYHdjIC1sICRUTVBESVIvJGktdG90YWwgfCBjdXQgLWYxIC1kIiAi
+YCIgfCBiYykgPSAwIF1dOwp0aGVuCmVjaG8gIkVSUk9SIC0gVGhlIGRlcGFy
+dG1lbnQgJGkgaGFzIG1vcmUgc2FsYXJpZXMgdGhhbiBwb3NzaWJsZS4iCmV4
+aXQgMQpmaQpkb25lCiMgQ2hlY2sgd2hldGhlciB0aGUgdG90YWwgc2FsYXJp
+ZXMgZm9yIHRoZSB5ZWFyIG1hdGNoIHRoZSB0b3RhbCBmb3IgYWxsIGRlcGFy
+dG1lbnRzCnBhc3RlIC1zZCsgJFRNUERJUi9yZXBvcnRfbnVtYmVycyB8IGJj
+ID4+ICRUTVBESVIvcmVwb3J0X3RvdGFsCnBhc3RlIC1zZCsgJFRNUERJUi92
+ZXJpZnlfcmVwb3J0IHwgYmMgPj4gJFRNUERJUi92ZXJpZnlfdG90YWwKZGlm
+ZiAtcXkgJFRNUERJUi9yZXBvcnRfdG90YWwgJFRNUERJUi92ZXJpZnlfdG90
+YWwKaWYgWyAkPyAtZXEgMCBdCnRoZW4KICBlY2hvICJUaGUgdmFsdWVzIGFk
+ZCB1cCwgdGhlIHJlcG9ydCBpcyBnb29kIgogIGV4aXQgMAplbHNlCiAgZWNo
+byAiRVJST1IgLSBUaGUgdmFsdWVzIGFyZSBkaWZmZXJlbnQsIHNvbWV0aGlu
+ZyBpcyB3cm9uZyIgPiYyCiAgZXhpdCAxCmZpCn0KCiMgUHJpbnQgb3V0IHRo
+ZSByZXBvcnQKcHJpbnRSZXBvcnQoKSB7CmNhdCAkVE1QRElSL3JlcG9ydC50
+eHQKfQoKIyBQcm92aWRlIHRoZSByZXBvcnQgZm9yIHdlYiBjbGllbnRzCnNl
+cnZlUmVwb3J0KCkgewplY2hvICJTdGFydGluZyBCYXNpYyBXZWIgU2VydmVy
+IgplY2hvICJMaXN0ZW5pbmcgb24gcG9ydCA4MDgwIgp3aGlsZSA6OyBkbyBu
+YyAtbCA4MDgwIDwgJFRNUERJUi9yZXBvcnQudHh0OyBkb25lCn0KCmNhc2Ug
+JDIgaW4KcHJpbnQpCmVjaG8gIlByaW50aW5nIFJlcG9ydCB0byBDb25zb2xl
+IgojIFdvcmsKZ2V0RGVwYXJ0bWVudAplbXBsb3llZUlECmdldFllYXIKZ2V0
+U2FsYXJ5CmNyZWF0ZVJlcG9ydApwcmludFJlcG9ydAo7OwpzZXJ2ZSkKZWNo
+byAiU2VydmluZyB0aGUgcmVwb3J0IGZvciBicm93c2VyIGFjY2VzcyIKIyBX
+b3JrCmdldERlcGFydG1lbnQKZW1wbG95ZWVJRApnZXRZZWFyCmdldFNhbGFy
+eQpjcmVhdGVSZXBvcnQKc2VydmVSZXBvcnQKOzsKdGVzdCkKZWNobyAiUnVu
+bmluZyBUZXN0cyB0byB2ZXJpZnkgZGF0YSIKIyBXb3JrCmdldERlcGFydG1l
+bnQKZW1wbG95ZWVJRApnZXRZZWFyCmdldFNhbGFyeQpjcmVhdGVSZXBvcnQK
+dmVyaWZ5UmVwb3J0CnByaW50UmVwb3J0Cjs7CiopCmVjaG8gIlJ1biBvcHRp
+b24gbm90IHBhc3NlZCwgcHJpbnRpbmcgYW5kIHNlcnZpbmcgdG8gYnJvd3Nl
+ciIKIyBXb3JrCmdldERlcGFydG1lbnQKZW1wbG95ZWVJRApnZXRZZWFyCmdl
+dFNhbGFyeQpjcmVhdGVSZXBvcnQKdmVyaWZ5UmVwb3J0CnByaW50UmVwb3J0
+CnNlcnZlUmVwb3J0Cjs7CmVzYWMKCiMgZGlzYWJsZSB0aGUgdHJhcAp0cmFw
+ICcnIDAKCiMgcnVuIGNsZWFudXAKY2xlYW51cAo=
+====
+_EOF
 
-# Create Variables and Temp Location
-REPORT_YEAR=${1?Year is missing, please pass a year to the command.\ Example: ./qsalary.sh 2000}
-TMPDIR=$(mktemp -d /tmp/qsalary-XXXX)
-DEPT=$(mktemp -p $TMPDIR -t dept-XXXX)
+logger -p user.notice "BOOTSTRAP: Wrote file.tmp - $?"
 
-# Help output if requested
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-  echo "Usage: `basename $0` <year> <run option>"
-  echo "Example: `basename $0` 2000 print"
-  echo " Run Options: print serve test"
-  exit 0
-fi
+# Decode the file
+uudecode -o /tmp/qsalary/qsalary.sh /tmp/qsalary/file.tmp
 
-# Create a trap for cleaning up if we have issues
-cleanup() {
-  rm $DEPT
-  rm -rf $TMPDIR
-}
-trap cleanup 0
+logger -p user.notice "BOOTSTRAP: Decoded qsalary.sh - $?"
 
-
-# Get Departments
-getDepartment() {
-echo "Getting Departments"
-grep -o '(.*' test_db/load_departments.dump | cut -f1 -d, | sed "s/[(']//g" >> $DEPT
-}
-
-# Loop through departments, create temp files for each department, get employee IDs for departments
-employeeID() {
-echo "Getting Employee IDs"
-for i in `cat $DEPT`; do 
-grep -h -o '(.*' test_db/load_dept_emp.dump test_db/load_dept_manager.dump | grep -w $i | cut -f1 -d, | cut -c2- | sort >> $TMPDIR/$i;
-done
-}
-
-# Get Requested Year Data
-getYear() {
-echo "Getting requested year data"
-awk -F"," '$3~/^'\'''$REPORT_YEAR'/' test_db/load_salaries*.dump | sed "s/[(']//g" | sort >> $TMPDIR/$REPORT_YEAR-data
-}
-
-# Get Salary By Year
-getSalary() {
-echo "Getting Salaries"
-for i in `cat $DEPT`; do 
-awk -F"," 'FNR == NR {arr[$0] = 1; next} ($1 in arr)' $TMPDIR/$i $TMPDIR/$REPORT_YEAR-data | cut -f2 -d, >> $TMPDIR/$i-total
-done
-}
-
-# Generate the Report
-createReport() {
-echo "Creating Quarterly Salary Report"
-echo "$REPORT_YEAR Quarterly Salary Report" >> $TMPDIR/report.txt
-echo "" >> $TMPDIR/report.txt
-for i in `cat $DEPT`; do
-grep $i test_db/load_departments.dump | cut -f2 -d, | sed "s/[();']//g" >> $TMPDIR/report.txt;
-awk '{ total+=$1 } END{  print int(total/4) }' $TMPDIR/$i-total >> $TMPDIR/report.txt;
-echo "" >> $TMPDIR/report.txt
-done
-}
-
-# Verify the numbers
-verifyReport() {
-echo "Verifying Totals"
-awk -F"," '$3~/^'\'''$REPORT_YEAR'/' test_db/load_salaries1.dump test_db/load_salaries2.dump test_db/load_salaries3.dump | cut -f2 -d, >> $TMPDIR/verify_report
-for i in `cat $DEPT`; do
-paste -sd+ $TMPDIR/$i-total | bc >> $TMPDIR/report_numbers;
-# Check to see if the department has more salaries then employees
-if [[ $(echo "`wc -l $TMPDIR/$i | cut -f1 -d" "` >= `wc -l $TMPDIR/$i-total | cut -f1 -d" "`" | bc) = 0 ]];
-then
-echo "ERROR - The department $i has more salaries than possible."
-exit 1
-fi
-done
-# Check whether the total salaries for the year match the total for all departments
-paste -sd+ $TMPDIR/report_numbers | bc >> $TMPDIR/report_total
-paste -sd+ $TMPDIR/verify_report | bc >> $TMPDIR/verify_total
-diff -qy $TMPDIR/report_total $TMPDIR/verify_total
-if [ $? -eq 0 ]
-then
-  echo "The values add up, the report is good"
-  exit 0
-else
-  echo "ERROR - The values are different, something is wrong" >&2
-  exit 1
-fi
-}
-
-# Print out the report
-printReport() {
-cat $TMPDIR/report.txt
-}
-
-# Provide the report for web clients
-serveReport() {
-echo "Starting Basic Web Server"
-echo "Listening on port 8080"
-while :; do nc -l 8080 < $TMPDIR/report.txt; done
-}
-
-case $2 in
-print)
-echo "Printing Report to Console"
-# Work
-getDepartment
-employeeID
-getYear
-getSalary
-createReport
-printReport
-;;
-serve)
-echo "Serving the report for browser access"
-# Work
-getDepartment
-employeeID
-getYear
-getSalary
-createReport
-serveReport
-;;
-test)
-echo "Running Tests to verify data"
-# Work
-getDepartment
-employeeID
-getYear
-getSalary
-createReport
-verifyReport
-printReport
-;;
-*)
-echo "Run option not passed, printing and serving to browser"
-# Work
-getDepartment
-employeeID
-getYear
-getSalary
-createReport
-verifyReport
-printReport
-serveReport
-;;
-esac
-
-# disable the trap
-trap '' 0
-
-# run cleanup
-cleanup
-EOF
-
-# Writing docker-compose.yml and Dockerfile
-cat > /opt/qsalary/Dockerfile <<EOF
+# Writing Dockerfile
+cat > /tmp/qsalary/Dockerfile <<EOF
 
 FROM centos
 
@@ -191,20 +129,26 @@ ADD qsalary.sh /usr/local/bin/qsalary.sh
 
 WORKDIR /opt/qsalary
 
-RUN apk add --no-cache git netcat-openbsd \
-    && git clone https://github.com/datacharmer/test_db /opt/qsalary/test_sb \
+RUN yum update -y \
+    && yum install -y git nc \
+    && git clone https://github.com/datacharmer/test_db /opt/qsalary/test_db \
     && chmod +x /usr/local/bin/qsalary.sh \
 
 CMD ["qsalary.sh"]
 EOF
+logger -p user.notice "BOOTSTRAP: Wrote Dockerfile - $?"
+
+# Writing docker-compose
 cat > /tmp/qsalary/docker-compose.yml <<EOF
 version: "3.4"
 
 services:
-	qsalary:
-		build: .
-		image: qsalary:latest
-		command: "qsalary.sh YEAR serve"
+  qsalary:
+    build: .
+    image: qsalary:latest
+    ports:
+      - "80:8080"
+    command: "qsalary.sh QYEAR serve"
 EOF
 
 logger -p user.notice "BOOTSTRAP: Writing docker-compose.yml - $?"
@@ -212,5 +156,5 @@ logger -p user.notice "BOOTSTRAP: Writing docker-compose.yml - $?"
 # Run application
 sleep 60
 cd /tmp/qsalary
-screen -d -m /usr/local/bin/docker-compose --project-directory /opt/qsalary/ up
+screen -d -m /usr/local/bin/docker-compose --project-directory /tmp/qsalary/ up
 logger -p user.notice "BOOTSTRAP: Application Started - $?"

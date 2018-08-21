@@ -4,7 +4,6 @@ services:
   qsalary:
     build: .
     image: qsalary:latest
-    env_file: .options
     ports:
       - "8080:8080"
-    command: "qsalary.sh YEAR serve"
+    command: "qsalary.sh QYEAR serve"

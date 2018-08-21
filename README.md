@@ -22,7 +22,7 @@ docker run qsalary:latest <year> <run_option>
 
 #### Run with docker-compose
 ```bash
-sed 's/YEAR/<year>/g' docker-compose.yml
+sed -i.bak 's/QYEAR/<year>/g' docker-compose.yml
 docker-compose up
 ```
 

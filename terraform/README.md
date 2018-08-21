@@ -17,8 +17,8 @@ This terraform docker container provides a complete enviroment in order to run t
 Create a SSH keypair within your AWS account. Use the name of the keypair you just created in the following command.
 
 ```bash
-sed 's/KEYPAIR/<keypair_name>/g' host.tf
-sed 's/YEAR/<year>/g' userdata.sh
+sed -i.bak 's/KEYPAIR/<keypair_name>/g' host.tf
+sed -i.bak 's/QYEAR/<year>/g' userdata.sh
 docker-compose up
 ```
 
